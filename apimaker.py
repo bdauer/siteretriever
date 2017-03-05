@@ -27,9 +27,29 @@ def add_resource(client, api_id, parent_resource, sub_path):
     file_name = "{0}_resource.pickle".format(sub_path)
     pickle_dictionary_to_file(response, file_name)
 
+
+def add_integration(client, api_id, resource, http_method, i_type):
+    """
+    Link a lambda function to an API gateway.
+    """
+    with open("dictionary_builder_lambda.pickle") as f:
+        function_arn = pickle.load(f)['FunctionArn']
+    region = 'us-east-1'
+    uri =\
+"arn:aws:apigateway:{0}:lambda:path/2015-03-31/functions/{1}/invocations".format(
+                                                    region, function_arn)
+    response = client.put_integration(
+        restApiId=api_id,
+        resourceId=resource['id'],
+        httpMethod=http_method,
+        type=i_type,
+        integrationHttpMethod=http_method,
+        uri=uri)
+    print(response)
+
 def add_method(client, api_id, resource, http_method, authorization_type):
     """
-    Link a lambda function to an api gateway.
+    Add a method to an API gateway.
     """
     response = client.put_method(
         restApiId=api_id,
@@ -77,4 +97,4 @@ if __name__ == "__main__":
     client = boto3.client('apigateway', region_name='us-east-1')
     api_id = get_api_id_from('api_info.pickle')
     resource = get_resource(client, api_id, 'sites')
-    add_method(client, api_id, resource, 'POST', 'None')
+    add_integration(client, api_id, resource, 'POST', 'AWS')
