@@ -14,9 +14,8 @@ def create_site_retriever_api():
         description='get site data from a list of sites',
         version='1'
     )
-    with open("api_info.pickle", 'w') as f:
-        pickle.dump(response, f)
-
+    file_name = "api_info.pickle"
+    pickle_dictionary_to_file(response, file_name)
 
 def get_initial_resource():
     """
@@ -28,27 +27,39 @@ def get_initial_resource():
     )
     return response['items'][0]
 
-
-def add_site_retriever_resource():
+def add_resource(client, api_id, parent_resource, sub_path):
     """
+    Create a new resource under the parent resource,
+    pickling and saving the response to a file.
     """
-    api_id = get_api_id_from_file('api_info.pickle')
-    parent_resource = get_initial_resource()
-
-    client = boto3.client('apigateway', region_name='us-east-1')
     response = client.create_resource(
         restApiId=api_id,
-        parentId=parent_resource['id']
-        pathPart='/'
-    )
+        parentId=parent_resource['id'],
+        pathPart=sub_path)
+    file_name = "{0}_resource.pickle".format(sub_path)
+    pickle_dictionary_to_file(response, file_name)
+
+
+def pickle_dictionary_to_file(dictionary, output):
+    """
+    Create a new file and write the provided dictionary to it.
+    """
+    with open(output, "w") as f:
+        pickle.dump(dictionary, f)
 
 
 def get_api_id_from(file):
+    """
+    Return the api id.
+    """
     with open(file, "r") as f:
         api_info = pickle.load(f)
         return api_info['id']
 
 
 if __name__ == "__main__":
+    client = boto3.client('apigateway', region_name='us-east-1')
+    api_id = get_api_id_from('api_info.pickle')
+    initial_resource = get_initial_resource()
 
-    get_initial_resource()
+    add_resource(client, api_id, initial_resource, "sites")
