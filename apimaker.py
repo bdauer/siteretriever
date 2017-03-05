@@ -1,14 +1,11 @@
 import boto3
-import json
-from datetime import datetime
 import pickle
+from helpers import pickle_dictionary_to_file
 
-
-def create_site_retriever_api():
+def create_site_retriever_api(client):
     """
     Create a new site retriever api and save its info to a file.
     """
-    client = boto3.client('apigateway', region_name='us-east-1')
     response = client.create_rest_api(
         name='siteretriever',
         description='get site data from a list of sites',
@@ -17,11 +14,10 @@ def create_site_retriever_api():
     file_name = "api_info.pickle"
     pickle_dictionary_to_file(response, file_name)
 
-def get_initial_resource():
+def get_initial_resource(client):
     """
     Return a dictionary representing the initial parent resource.
     """
-    client = boto3.client('apigateway', region_name='us-east-1')
     response = client.get_resources(
         restApiId=get_api_id_from('api_info.pickle')
     )
@@ -38,14 +34,6 @@ def add_resource(client, api_id, parent_resource, sub_path):
         pathPart=sub_path)
     file_name = "{0}_resource.pickle".format(sub_path)
     pickle_dictionary_to_file(response, file_name)
-
-
-def pickle_dictionary_to_file(dictionary, output):
-    """
-    Create a new file and write the provided dictionary to it.
-    """
-    with open(output, "w") as f:
-        pickle.dump(dictionary, f)
 
 
 def get_api_id_from(file):
