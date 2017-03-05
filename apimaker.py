@@ -14,14 +14,6 @@ def create_site_retriever_api(client):
     file_name = "api_info.pickle"
     pickle_dictionary_to_file(response, file_name)
 
-def get_initial_resource(client):
-    """
-    Return a dictionary representing the initial parent resource.
-    """
-    response = client.get_resources(
-        restApiId=get_api_id_from('api_info.pickle')
-    )
-    return response['items'][0]
 
 def add_resource(client, api_id, parent_resource, sub_path):
     """
@@ -35,6 +27,16 @@ def add_resource(client, api_id, parent_resource, sub_path):
     file_name = "{0}_resource.pickle".format(sub_path)
     pickle_dictionary_to_file(response, file_name)
 
+def add_method(client, api_id, resource, http_method, authorization_type):
+    """
+    Link a lambda function to an api gateway.
+    """
+    response = client.put_method(
+        restApiId=api_id,
+        resourceId=resource['id'],
+        httpMethod=http_method,
+        authorizationType=authorization_type
+        )
 
 def get_api_id_from(file):
     """
@@ -45,9 +47,34 @@ def get_api_id_from(file):
         return api_info['id']
 
 
+def get_resource(client, api_id, path_part):
+    """
+    Return a resource dictionary.
+    The path_part is used to identify the dictionary.
+    """
+    response = client.get_resources(
+        restApiId=api_id
+    )
+    for item in response['items']:
+        try:
+            if item['pathPart'] == path_part:
+                resource = item
+        except KeyError:
+            continue
+    return resource
+
+def get_initial_resource(client, api_id):
+    """
+    Return a dictionary representing the initial parent resource.
+    """
+    response = client.get_resources(
+        restApiId=api_id
+    )
+    return response['items'][0]
+
+
 if __name__ == "__main__":
     client = boto3.client('apigateway', region_name='us-east-1')
     api_id = get_api_id_from('api_info.pickle')
-    initial_resource = get_initial_resource()
-
-    add_resource(client, api_id, initial_resource, "sites")
+    resource = get_resource(client, api_id, 'sites')
+    add_method(client, api_id, resource, 'POST', 'None')
