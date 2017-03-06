@@ -30,7 +30,7 @@ def create_table(client, table_name, attribute_list,
         }
     )
 
-def add_item_to_table(client, table_name, attributes):
+def add_item_to_table(client, table_name, item_name, attributes):
     """
     Add an item to an existing table.
     attribute_list format: [(name, type, value)]
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     db_client = boto3.client('dynamodb', region_name='us-east-1')
     table_name = 'siteDict'
     # attribute_list = [('name', 'S', 'HASH'), ('rank', 'N', 'RANGE')]
-    attributes = [('site', 'S', 'google'), ('rank', 'N', "1"),
+    attributes = [('name', 'S', 'google'), ('rank', 'N', "1"),
                   ('headers', 'L', [{'S':'apple'}, {'S':'pear'}])]
-
-    add_item_to_table(db_client, table_name, attributes)
+    item_name = 'google'
+    add_item_to_table(db_client, table_name, item_name, attributes)
