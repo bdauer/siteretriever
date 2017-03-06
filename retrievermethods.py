@@ -1,3 +1,6 @@
+import requests
+from bs4 import BeautifulSoup
+
     def get_page(site):
         """
         Return a response object from the site.
