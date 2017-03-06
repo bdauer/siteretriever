@@ -4,7 +4,7 @@ Here's the rundown:
 
 * `apimaker.py` contains functions for programmatically creating an api using API Gateway, adding resources and methods, and linking a lambda.
 
-* `awssiteretriever.py` contains a lambda handler. It's going to be invoked asynchronously for each of the submitted sites. It will build the site dictionaries and save them, most likely to memcache via ElastiCache.
+* `awssiteretriever.py` contains a lambda handler. It's going to be invoked asynchronously for each of the submitted sites. It will build the site dictionaries and save them, ~~most likely to memcache via ElastiCache~~ to a dynamoDB table.
 
 * `helpers.py` contains shared methods. Currently the only method is a pickler for saving response data I'll need later. Eventually I should probably save to s3 buckets instead, or even better, if logs are being created, retrieve the information from there.
 
@@ -12,7 +12,7 @@ Here's the rundown:
 
 * `retrievermethods.py` contains functions for use by `awssiteretriever.py` to keep the code there a little cleaner.
 
-* `sitedictbuilder.py` contains a lambda handler that gets triggered by the API, taking a list of sites and passing each as an asynchronous call to `awssiteretriever.py`. The name is confusing and should be changed. I may also have it create the ElastiCache cluster, which would get deleted when the data is retrieved.
+* `sitedictbuilder.py` contains a lambda handler that gets triggered by the API, taking a list of sites and passing each as an asynchronous call to `awssiteretriever.py`. The name is confusing and should be changed. I may also have it create the ~~ElastiCache cluster~~ dynamoDB table, which would get deleted when the data is retrieved.
 
 * `siteretriever.py` was copied from the other repo for copying functionality. It can safely be ignored.
 
