@@ -67,20 +67,23 @@ def setup_method_with_lambda(client, api_id, resource, http_method,
         restApiId=api_id,
         resourceId=resource['id'],
         httpMethod=http_method,
-        statusCode='200'
-    )
+        statusCode="200",
+        # need empty selection pattern due to bug. See bug here:
+        # https://github.com/aws/aws-sdk-ruby/issues/1080
+        selectionPattern=''
+        )
 
     client.create_deployment(
         restApiId=api_id,
-        stage_name="prod"
+        stageName="prod"
         )
 
     lambda_client = boto3.client('lambda', region_name='us-east-1')
     lambda_client.add_permission(
         FunctionName=function_name,
-        StatementId=apigateway-siteretriever,
+        StatementId="apigateway-siteretriever",
         Action="lambda:InvokeFunction",
-        principal="apigateway.amazonaws.com"
+        Principal="apigateway.amazonaws.com"
         )
 
 def get_api_id_from(file):
@@ -122,5 +125,5 @@ if __name__ == "__main__":
     client = boto3.client('apigateway', region_name='us-east-1')
     api_id = get_api_id_from('api_info.pickle')
     resource = get_resource(client, api_id, 'sites')
-    setup_method_with_lambda(client, api_id, resource, 'POST',
-                            'None', 'AWS', 'us-east-1', 'dictionary_builder')
+    setup_method_with_lambda(client, api_id, resource, 'POST', 'None', 'AWS',
+                             'us-east-1', 'dictionary_builder')
