@@ -14,7 +14,6 @@ def create_site_retriever_api(client):
     file_name = "api_info.pickle"
     pickle_dictionary_to_file(response, file_name)
 
-
 def add_resource(client, api_id, parent_resource, sub_path):
     """
     Create a new resource under the parent resource,
@@ -28,34 +27,60 @@ def add_resource(client, api_id, parent_resource, sub_path):
     pickle_dictionary_to_file(response, file_name)
 
 
-def add_integration(client, api_id, resource, http_method, i_type):
+
+def setup_method_with_lambda(client, api_id, resource, http_method,
+                             authorization_type, integration_type,
+                             region, function_name):
     """
-    Link a lambda function to an API gateway.
+    Add a lambda method to the provided resource and deploy it.
     """
+    # add an http method to the resource.
+    client.put_method(
+        restApiId=api_id,
+        resourceId=resource['id'],
+        httpMethod=http_method,
+        authorizationType=authorization_type
+    )
     with open("dictionary_builder_lambda.pickle") as f:
         function_arn = pickle.load(f)['FunctionArn']
     region = 'us-east-1'
     uri =\
 "arn:aws:apigateway:{0}:lambda:path/2015-03-31/functions/{1}/invocations".format(
-                                                    region, function_arn)
-    response = client.put_integration(
+                                                    region, function_arn, function_name)
+    # add an integration to the resource
+    client.put_integration(
         restApiId=api_id,
         resourceId=resource['id'],
         httpMethod=http_method,
-        type=i_type,
+        type=integration_type,
         integrationHttpMethod=http_method,
         uri=uri)
-    print(response)
 
-def add_method(client, api_id, resource, http_method, authorization_type):
-    """
-    Add a method to an API gateway.
-    """
-    response = client.put_method(
+    client.put_method_response(
         restApiId=api_id,
         resourceId=resource['id'],
         httpMethod=http_method,
-        authorizationType=authorization_type
+        statusCode='200'
+        )
+
+    client.put_integration_response(
+        restApiId=api_id,
+        resourceId=resource['id'],
+        httpMethod=http_method,
+        statusCode='200'
+    )
+
+    client.create_deployment(
+        restApiId=api_id,
+        stage_name="prod"
+        )
+
+    lambda_client = boto3.client('lambda', region_name='us-east-1')
+    lambda_client.add_permission(
+        FunctionName=function_name,
+        StatementId=apigateway-siteretriever,
+        Action="lambda:InvokeFunction",
+        principal="apigateway.amazonaws.com"
         )
 
 def get_api_id_from(file):
@@ -97,4 +122,5 @@ if __name__ == "__main__":
     client = boto3.client('apigateway', region_name='us-east-1')
     api_id = get_api_id_from('api_info.pickle')
     resource = get_resource(client, api_id, 'sites')
-    add_integration(client, api_id, resource, 'POST', 'AWS')
+    setup_method_with_lambda(client, api_id, resource, 'POST',
+                            'None', 'AWS', 'us-east-1', 'dictionary_builder')
