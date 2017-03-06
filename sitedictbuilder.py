@@ -20,5 +20,5 @@ def lambda_handler(event, context):
         lambda_client.invoke(
             FunctionName='scrape_and_store',
             InvocationType='Event'
-            Payload = json.dumps({'site_name': site, 'site_rank': event['sites'].index(site)}) # if this doesn't work, try io.StringIO
+            Payload = json.dumps({'site': site, 'rank': event['sites'].index(site)}) # if this doesn't work, try io.StringIO
         )
