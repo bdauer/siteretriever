@@ -12,7 +12,7 @@ Here's the rundown:
 
 * `retrievermethods.py` contains functions for use by `awssiteretriever.py` to keep the code there a little cleaner.
 
-* `sitedictbuilder.py` contains a lambda handler that gets triggered by the API, taking a list of sites and passing each as an asynchronous call to `awssoteretriever.py`. The name is confusing and should be changed. I may also have it create the ElastiCache cluster, which would get deleted when the data is retrieved.
+* `sitedictbuilder.py` contains a lambda handler that gets triggered by the API, taking a list of sites and passing each as an asynchronous call to `awssiteretriever.py`. The name is confusing and should be changed. I may also have it create the ElastiCache cluster, which would get deleted when the data is retrieved.
 
 * `siteretriever.py` was copied from the other repo for copying functionality. It can safely be ignored.
 
