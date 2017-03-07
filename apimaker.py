@@ -39,7 +39,7 @@ def setup_method_with_lambda(client, api_id, resource, http_method,
         httpMethod=http_method,
         authorizationType=authorization_type
     )
-    with open("dictionary_builder_lambda.pickle") as f:
+    with open("{0}_lambda.pickle".format(function_name)) as f:
         function_arn = pickle.load(f)['FunctionArn']
     region = 'us-east-1'
     uri =\
@@ -51,7 +51,7 @@ def setup_method_with_lambda(client, api_id, resource, http_method,
         resourceId=resource['id'],
         httpMethod=http_method,
         type=integration_type,
-        integrationHttpMethod=http_method,
+        integrationHttpMethod='POST',
         uri=uri)
 
     client.put_method_response(
