@@ -26,8 +26,6 @@ def add_resource(client, api_id, parent_resource, sub_path):
     file_name = "{0}_resource.pickle".format(sub_path)
     pickle_dictionary_to_file(response, file_name)
 
-
-
 def setup_method_with_lambda(client, api_id, resource, http_method,
                              authorization_type, integration_type,
                              region, function_name):
