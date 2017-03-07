@@ -77,6 +77,5 @@ target/
 *.html
 
 *.pickle
-*.zip
 
 *.json
