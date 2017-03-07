@@ -1,8 +1,4 @@
-This won't make complete sense unless you've looked at [retrievegeneratereport](https://github.com/bdauer/retrievegeneratereport). This is meant as a replacement for the website scraper and site dictionary builder.
-
-
-### note: I forgot to programmatically create the role. This won't run until I get to that.
-
+This won't make complete sense unless you've looked at [retrievegeneratereport](https://github.com/bdauer/retrievegeneratereport). This is meant as a replacement for the website scraper and site dictionary builder. It's a very rough draft but it works.
 
 ## Instructions
 
@@ -18,11 +14,11 @@ After downloading the code:
 
 5. In the AWS console, go to the API Gateway and select `siteretriever`.
 
-6. Select `POST` and make a test with a dictionary of the form `{"sites": [site, ..., site]}` where site is a website e.g. google.com, facebook.com, as a string.
+6. Select `POST` and test with a dictionary of the form `{"sites": [site, ..., site]}` where site is a website e.g. google.com, facebook.com, as a string.
 
-7. Select `GET` and make a test. It should return the site data from the dynamoDB.
+7. Select `GET` and test. It should return the site data from the table.
 
-8. For cleanup, delete the API, delete the lambdas (site_data_retriever, scrape_and_store, dictionary_builder), and delete the table in the dynamoDB (siteDict)
+8. For cleanup, delete the `siteretriever` API, delete the lambdas (site_data_retriever, scrape_and_store, dictionary_builder), delete the `siteDict` table in dynamoDB. Delete the `site-retrieval-role` role in IAM.
 
 ## Still needed
 
@@ -42,4 +38,4 @@ After downloading the code:
 
 - I'd still need to process the GET data a little so that it would work with the other elements of the project.
 
-- Need to recover the billable duration from the logs.
+- Need to recover the billable duration for retrieving each site from the logs.
