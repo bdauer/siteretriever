@@ -1,19 +1,40 @@
-The siteretriever is currently a loose confederation of scripts and lambdas. This won't make complete sense unless you've looked at [retrievegeneratereport](https://github.com/bdauer/retrievegeneratereport). This is meant as a replacement for the website scraper and site dictionary builder.
+This won't make complete sense unless you've looked at [retrievegeneratereport](https://github.com/bdauer/retrievegeneratereport). This is meant as a replacement for the website scraper and site dictionary builder.
 
-Here's the rundown:
 
-* `apimaker.py` contains functions for programmatically creating an api using API Gateway, adding resources and methods, and linking a lambda.
+## Instructions
 
-* `awssiteretriever.py` contains a lambda handler. It's going to be invoked asynchronously for each of the submitted sites. It will build the site dictionaries and save them, ~~most likely to memcache via ElastiCache~~ to a dynamoDB table.
+After downloading the code:
 
-* `helpers.py` contains shared methods. Currently the only method is a pickler for saving response data I'll need later. Eventually I should probably save to s3 buckets instead, or even better, if logs are being created, retrieve the information from there.
+1.  In your terminal, `cd` into `siteretrieverapi`.
 
-* `lambdabuilder.py` contains functions for programmatically creating a lambda.
+2.  If you'd like to create a virtualenvironment, create one with `virtualenv -p python3 env`. (Activate it with `source env/bin/activate`).
 
-* `retrievermethods.py` contains functions for use by `awssiteretriever.py` to keep the code there a little cleaner.
+3.  `pip install -r requirements.txt` will install the requirements.
 
-* `sitedictbuilder.py` contains a lambda handler that gets triggered by the API, taking a list of sites and passing each as an asynchronous call to `awssiteretriever.py`. The name is confusing and should be changed. I may also have it create the ~~ElastiCache cluster~~ dynamoDB table, which would get deleted when the data is retrieved.
+4. Run `main.py` to build the API endpoints, create a dynamodb table and upload the lambdas.
 
-* `siteretriever.py` was copied from the other repo for copying functionality. It can safely be ignored.
+5. In the AWS console, go to the API Gateway and select `siteretriever`.
 
-* The initial version of this won't have performance data. I think the best metric to track, rather than timing things myself, is billable duration. That will require accessing the logs, another beast entirely, so I'll address it later. Maybe once I get that working it will be easier to think about how to access id's and arn's without resorting to locally pickled files.
+6. Select `POST` and make a test with a dictionary of the form `{"sites": [site, ..., site]}` where site is a website e.g. google.com, facebook.com, as a string.
+
+7. Select `GET` and make a test. It should return the site data from the dynamoDB.
+
+8. For cleanup, delete the API, delete the lambdas (site_data_retriever, scrape_and_store, dictionary_builder), and delete the table in the dynamoDB (siteDict)
+
+## Still needed
+
+- Roles are too permissive. They need to be tightened.
+
+- Instead of saving info I need to a local pickled file, I should save to an s3 bucket, or get it from a log if it's available there.
+
+- Naming and comments aren't great.
+
+- I got this done pretty roughly. Would need to write tests for an actual implementation.
+
+- The GET request should check to make sure that the correct number of sites have been processed, so I'd need to store the number of sites expected and check against it.
+
+- I could use the dyamodb as a cache, and if an item was added within the past day, get the data from there instead of processing it again.
+
+- Speaking of caches, since this is temporary storage I considered using memcache with ElastiCache but the free tier only allows for a node type that requires a vpc, which is not included in the free tier.
+
+- I'd still need to process the GET data a little so that it would work with the other elements of the project.
