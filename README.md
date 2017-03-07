@@ -1,6 +1,9 @@
 This won't make complete sense unless you've looked at [retrievegeneratereport](https://github.com/bdauer/retrievegeneratereport). This is meant as a replacement for the website scraper and site dictionary builder.
 
 
+### note: I forgot to programmatically create the role. This won't run until I get to that.
+
+
 ## Instructions
 
 After downloading the code:
@@ -38,3 +41,5 @@ After downloading the code:
 - Speaking of caches, since this is temporary storage I considered using memcache with ElastiCache but the free tier only allows for a node type that requires a vpc, which is not included in the free tier.
 
 - I'd still need to process the GET data a little so that it would work with the other elements of the project.
+
+- Need to recover the billable duration from the logs.
