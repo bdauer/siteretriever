@@ -6,7 +6,7 @@ After downloading the code:
 
 1.  In your terminal, `cd` into `siteretrieverapi`.
 
-2.  If you'd like to create a virtualenvironment, create one with `virtualenv -p python3 env`. (Activate it with `source env/bin/activate`).
+2.  If you'd like to create a virtualenvironment, create one with `virtualenv -p python2 env`. (Activate it with `source env/bin/activate`).
 
 3.  `pip install -r requirements.txt` will install the requirements.
 
